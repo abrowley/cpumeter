@@ -1,0 +1,14 @@
+{
+  "name": "cpu-meter",
+  "version": "0.1.0",
+  "author": "Alex Rowley <alex.rowley@gmail.com>",
+  "description": "A real time cpu meter",
+  "dependencies" : {
+    "express"   :  "3.1.1",
+    "socket.io" :  "0.9.14",
+    "flot"   :  "https://github.com/flot/flot/tarball/master",
+    "zeparser"   :  "0.0.5",
+    "os-utils"   :  "0.0.14"
+  }
+}
+

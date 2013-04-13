@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+</style>
+<link href="cpumeter.css" rel="stylesheet" type="text/css">
+<body>
+<h1>Raspberry Pi CPU</h1>
+<p id="socketdata">CPU Usage: </p>
+
+		<div class="cpumeter-container">
+			<div id="cpumeter" class="cpumeter-placeholder"></div>
+		</div>
+
+</body>
+	<script language="javascript" type="text/javascript" src="jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+
+
+		// We use an inline data source in the example, usually data would
+		// be fetched from a server
+
+		var data = [],
+			totalPoints = 300;
+
+		function accumulateData(value) {
+
+			if (data.length > 0)
+				data = data.slice(1);
+
+
+			while (data.length < totalPoints) {
+
+				var prev = data.length > 0 ? data[data.length - 1] : 50,
+					y = value;
+
+				data.push(y);
+			}
+
+			// Zip the generated y values with the x values
+
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i, data[i]])
+			}
+
+			return res;
+		}
+
+		function initData() {
+
+			if (data.length > 0)
+				data = data.slice(1);
+
+
+			while (data.length < totalPoints) {
+
+					y = 0;
+
+				data.push(y);
+			}
+
+			// Zip the generated y values with the x values
+
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([i, data[i]])
+			}
+
+			return res;
+		}
+		// Set up the control widget
+
+
+		var plot = $.plot("#cpumeter", [ initData() ], {
+			series: {
+				shadowSize: 0	// Drawing is faster without shadows
+			},
+			yaxis: {
+				min: 0,
+				max: 100
+			},
+			xaxis: {
+				show: false
+			}
+		});
+
+
+
+
+  var socket = io.connect('http://raspberrypi2.home:3000');
+  var socketdata = document.getElementById("socketdata");
+  socket.on('cpuchange', function (data) {
+    console.log(data);
+    var value=100.0*data.data.toFixed(2);
+    plot.setData([accumulateData(value)]);
+    plot.draw();
+    socketdata.innerHTML='CPU Usage: '+value+'%';
+  });
+
+	</script>
+</html>
